@@ -14,11 +14,17 @@ class sensu::redis::config {
     $ensure = 'present'
   }
 
+  $file_ensure = $ensure ? {
+    'absent'  => 'absent',
+    default   => 'file'
+  }
+
   file { '/etc/sensu/conf.d/redis.json':
-    ensure  => $ensure,
+    ensure  => $file_ensure,
     owner   => 'sensu',
     group   => 'sensu',
     mode    => '0444',
+    notify  => [ Service['sensu-server'], Service['sensu-api'] ]
   }
 
   sensu_redis_config { $::fqdn:

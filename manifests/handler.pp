@@ -34,7 +34,7 @@
 #
 # [*pipe*]
 #   Hash.  Pipe information used when type=transport
-#   Keys: name, type, options 
+#   Keys: name, type, options
 #   Default: undef
 #
 # [*socket*]
@@ -137,11 +137,12 @@ define sensu::handler(
   }
 
   file { "/etc/sensu/conf.d/handlers/${name}.json":
-    ensure  => $ensure,
+    ensure  => $file_ensure,
     owner   => 'sensu',
     group   => 'sensu',
     mode    => '0444',
     before  => Sensu_handler[$name],
+    notify  => Service['sensu-server']
   }
 
   sensu_handler { $name:

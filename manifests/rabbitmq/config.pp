@@ -14,6 +14,11 @@ class sensu::rabbitmq::config {
     $ensure = 'present'
   }
 
+  $file_ensure = $ensure ? {
+    'absent'  => 'absent',
+    default   => 'file'
+  }
+
   if $sensu::rabbitmq_ssl_cert_chain {
     file { '/etc/sensu/ssl':
       ensure  => directory,
@@ -62,11 +67,12 @@ class sensu::rabbitmq::config {
   }
 
   file { '/etc/sensu/conf.d/rabbitmq.json':
-    ensure  => $ensure,
+    ensure  => $file_ensure,
     owner   => 'sensu',
     group   => 'sensu',
     mode    => '0440',
     before  => Sensu_rabbitmq_config[$::fqdn],
+    notify  => [ Service['sensu-server'], Service['sensu-client'] ]
   }
 
   sensu_rabbitmq_config { $::fqdn:

@@ -14,11 +14,17 @@ class sensu::api::config {
     $ensure = 'present'
   }
 
+  $file_ensure = $ensure ? {
+    'absent'  => 'absent',
+    default   => 'file'
+  }
+
   file { '/etc/sensu/conf.d/api.json':
-    ensure  => $ensure,
+    ensure  => $file_ensure,
     owner   => 'sensu',
     group   => 'sensu',
     mode    => '0440',
+    notify  => Service['sensu-api']
   }
 
   sensu_api_config { $::fqdn:

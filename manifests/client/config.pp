@@ -14,11 +14,17 @@ class sensu::client::config {
     $ensure = 'present'
   }
 
+  $file_ensure = $ensure ? {
+    'absent'  => 'absent',
+    default   => 'file'
+  }
+
   file { '/etc/sensu/conf.d/client.json':
-    ensure  => $ensure,
+    ensure  => $file_ensure,
     owner   => 'sensu',
     group   => 'sensu',
     mode    => '0444',
+    notify  => Service['sensu-client']
   }
 
   sensu_client_config { $::fqdn:

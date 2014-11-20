@@ -20,12 +20,18 @@ define sensu::subscription (
 
   validate_re($ensure, ['^present$', '^absent$'] )
 
+  $file_ensure = $ensure ? {
+    'absent'  => 'absent',
+    default   => 'file'
+  }
+
   file { "/etc/sensu/conf.d/subscription_${name}.json":
-    ensure  => $ensure,
+    ensure  => $file_ensure,
     owner   => 'sensu',
     group   => 'sensu',
     mode    => '0444',
     before  => Sensu_client_subscription[$name],
+    notify  => Service['sensu-server']
   }
 
   sensu_client_subscription { $name:

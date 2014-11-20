@@ -108,15 +108,20 @@ define sensu::check(
   if $timeout and !is_numeric($timeout) {
     fail("sensu::check{${name}}: timeout must be a numeric (got: ${timeout})")
   }
+  $file_ensure = $ensure ? {
+    'absent'  => 'absent',
+    default   => 'file'
+  }
 
   $check_name = regsubst(regsubst($name, ' ', '_', 'G'), '[\(\)]', '', 'G')
 
   file { "/etc/sensu/conf.d/checks/${check_name}.json":
-    ensure  => $ensure,
+    ensure  => $file_ensure,
     owner   => 'sensu',
     group   => 'sensu',
     mode    => '0440',
     before  => Sensu_check[$check_name],
+    notify  => Service['sensu-server']
   }
 
   sensu_check { $check_name:
