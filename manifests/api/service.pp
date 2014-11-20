@@ -25,7 +25,7 @@ class sensu::api::service {
       ensure     => $ensure,
       enable     => $enable,
       hasrestart => true,
-      subscribe  => [ Class['sensu::package'], Class['sensu::api::config'], Class['sensu::redis::config'] ]
+      subscribe  => [ Class['sensu::package'], Class['sensu::api::config'], Class['sensu::redis::config'], Service['sensu-server'] ]
     }
   }
 }
