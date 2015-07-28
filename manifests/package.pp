@@ -11,8 +11,8 @@ class sensu::package {
   case $::osfamily {
 
     'Debian': {
-      class { 'sensu::repo::apt': }
       if $sensu::install_repo {
+        class { 'sensu::repo::apt': }
         $repo_require = Apt::Source['sensu']
       } else {
         $repo_require = undef
